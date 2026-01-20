@@ -1,10 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>r18</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
+        /* 预加载层样式 - 全屏覆盖 */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        /* 转圈加载动画核心样式 */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #ff2828;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+        /* 旋转动画定义 */
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
         body {
             width: 100vw;
             height: 100vh;
@@ -15,9 +47,10 @@
             background-position: center;
             background-size: cover;
             background-color: #f0f0f0;
+            /* 默认隐藏，加载完成后显示 */
+            display: none;
         }
 
-        
         .text-box {
             text-align: center;
             background: rgba(255, 255, 255, 0.8);
@@ -33,7 +66,6 @@
             transform: translate(-50%, -50%);
         }
 
-       
         h1 {
             font-size: 50px;
             margin: 10px 0;
@@ -51,7 +83,6 @@
             line-height: 1.5;
         }
 
-        
         .btn-group {
             position: absolute;
             top: 60%;
@@ -91,75 +122,110 @@
     </style>
 </head>
 <body>
+    <!-- 预加载层：替换为转圈动画 -->
+    <div id="preloader">
+        <div class="loader"></div>
+    </div>
+
     <a href="./关于我们.html" class="about-link">关于我们</a>
     <div class="text-box">
         <h1>您是否满了18</h1>
-        <p>以下内容可能不适合未满18岁的人群观看，我们需要确认您的年龄。</p >
+        <p>以下内容可能不适合未满18岁的人群观看，我们需要确认您的年龄。</p>
         <h4>The following may not be suitable for people under the age of 18 and we need to confirm your age.</h4>
     </div>
 
     <div class="btn-group">
-        <a href="./1994的微笑.mp4" class="age-btn yes-btn">是</a >
-        <a href="https://xingye.me/game/index.php" class="age-btn no-btn">否</a >
+        <a href="./1994的微笑.mp4" class="age-btn yes-btn">是</a>
+        <a href="https://xingye.me/game/index.php" class="age-btn no-btn">否</a>
     </div>
 
-<script>
+    <script>
+        // 图片列表
+        const imgUrls = [
+            "./45c71a679f061e0049539a6d0cc74d28.jpg",
+            "./微信图片_20260117205931_5_21.jpg",
+            "./微信图片_20260117205932_6_21.jpg",
+            "./微信图片_20260117205933_7_21.jpg",
+            "./微信图片_20260117205935_8_21.jpg",
+            "./微信图片_20260117205936_9_21.jpg",
+            "./微信图片_20260117205936_10_21.png",
+            "./微信图片_20260117205937_11_21.jpg",
+            "./微信图片_20260117205938_12_21.jpg"
+        ];
 
-const preloadMultilmgs=(urls)=>{urls.forEach (url=>{const img=new Image();img.src=url;
-img.src=url;
-    });
-};
-const imgUrls=[
-    "./45c71a679f061e0049539a6d0cc74d28.jpg",
-    "./微信图片_20260117205931_5_21.jpg",
-    "./微信图片_20260117205932_6_21.jpg",
-    "./微信图片_20260117205933_7_21.jpg",
-    "./微信图片_20260117205935_8_21.jpg",
-    "./微信图片_20260117205936_9_21.jpg",
-    "./微信图片_20260117205936_10_21.png",
-    "./微信图片_20260117205937_11_21.jpg",
-    "./微信图片_20260117205938_12_21.jpg"
-];
-preloadMultilmgs(imgUrls);
+        const preloader = document.getElementById('preloader');
+        let loadedCount = 0;
+        // 超时时间 10秒
+        const timeout = 10000;
 
-window.addEventListener('load', function() {
-    const getBasePath = () => {
-        const pathname = window.location.pathname;
-        const index = pathname.lastIndexOf('/');
-        return index > 0 ? pathname.substring(0, index) : '';
-    };
-    const basePath = getBasePath();
+        // 超时处理
+        const timeoutTimer = setTimeout(() => {
+            alert("图片加载超时！");
+            // 可替换为跳转失败页的代码
+            // window.location.href = "失败页地址";
+        }, timeout);
 
-    const bgImgList = [
-        "./45c71a679f061e0049539a6d0cc74d28.jpg",
-        "./微信图片_20260117205931_5_21.jpg",
-        "./微信图片_20260117205932_6_21.jpg",
-        "./微信图片_20260117205933_7_21.jpg",
-        "./微信图片_20260117205935_8_21.jpg",
-        "./微信图片_20260117205936_9_21.jpg",
-        "./微信图片_20260117205936_10_21.png",
-        "./微信图片_20260117205937_11_21.jpg",
-        "./微信图片_20260117205938_12_21.jpg"
-    ];
+        // 批量预加载图片 并监听状态
+        function preloadImages(urls) {
+            urls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+                // 图片加载成功
+                img.onload = () => {
+                    loadedCount++;
+                    checkAllLoaded();
+                };
+                // 图片加载失败 也计入完成（避免卡死）
+                img.onerror = () => {
+                    loadedCount++;
+                    console.error("加载失败：", url);
+                    checkAllLoaded();
+                };
+            });
+        }
 
-    const randomIndex = Math.floor(Math.random() * bgImgList.length);
-    const randomBgUrl = bgImgList[randomIndex] + "?v=" + Date.now();
+        // 检查所有图片是否加载完成
+        function checkAllLoaded() {
+            if (loadedCount === imgUrls.length) {
+                clearTimeout(timeoutTimer);
+                // 隐藏预加载层 显示页面
+                preloader.style.display = 'none';
+                document.body.style.display = 'block';
+                // 加载完成后设置背景图
+                setRandomBg();
+            }
+        }
 
-    const bgImg = new Image();
-    bgImg.src = randomBgUrl;
-    bgImg.onload = function() {
-        document.body.style.backgroundImage = `url(${randomBgUrl})`;
-    };
-    bgImg.onerror = function() {
-        console.error("【资源加载失败】请检查文件是否上传，路径：", randomBgUrl);
-        document.body.style.backgroundColor = "#e0e0e0";
-    };
+        // 设置随机背景图
+        function setRandomBg() {
+            const getBasePath = () => {
+                const pathname = window.location.pathname;
+                const index = pathname.lastIndexOf('/');
+                return index > 0 ? pathname.substring(0, index) : '';
+            };
+            const basePath = getBasePath();
+            const randomIndex = Math.floor(Math.random() * imgUrls.length);
+            const randomBgUrl = imgUrls[randomIndex];
+            
+            const bgImg = new Image();
+            bgImg.src = randomBgUrl;
+            bgImg.onload = () => {
+                document.body.style.backgroundImage = `url(${randomBgUrl})`;
+            };
+            bgImg.onerror = () => {
+                console.error("背景图加载失败：", randomBgUrl);
+                document.body.style.backgroundColor = "#e0e0e0";
+            };
 
-    const videoLink = document.querySelector('.yes-btn');
-    if(videoLink) {
-        videoLink.href = basePath + "/1994的微笑.mp4";
-    }
-});
-</script>
+            // 修正视频链接路径
+            const videoLink = document.querySelector('.yes-btn');
+            if (videoLink) {
+                videoLink.href = basePath + "/1994的微笑.mp4";
+            }
+        }
+
+        // 执行预加载
+        preloadImages(imgUrls);
+    </script>
 </body>
 </html>
