@@ -1,43 +1,63 @@
 <!DOCTYPe html>
 <html>
-    <head>
+
+<head>
     <meta charset="UTF-8">
     <title>1145</title>
-    <body style="background-color:rgb(196, 255, 255)">
-        <audio controls loop>
-            <source sre="" type ="audio/mpeg">
-            </audio>
-    </body>
-    <style>
-        @keyframes spin {
-        from {transform: rotate(0deg);}
-        to { transform: rotate(360deg);}    
+
+<body>
+    <audio src="./1145.mp3" autoplay></audio>
+    <video class="bn">
+    <source src="./1994的微笑.mp4 " type="video/mp4">
+</video>
+</body>
+<style>
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
         }
-        body {
-            width: 100vw;  
-            height: 100vh; 
-            overflow: hidden;
-            margin: 0;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            
+
+        to {
+            transform: rotate(360deg);
         }
-        h1{
-            position: absolute;
-            top: 20%;
-            font-size:2.7rem;
-            color: #7c6666;
-            animation: spin 2.5s linear infinite;
-            display: inline-block;
+    }
+    
+    body {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    bn {
+        position: fixed;
+        top: 50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        z-index:1;
         }
-        a{
+
+    h1 {
+        position: absolute;
+        top: 20%;
+        font-size: 2.7rem;
+        color: #7c6666;
+        animation: spin 2.5s linear infinite;
+        display: inline-block;
+    }
+
+    a {
         position: absolute;
         top: 50%;
-        }
-        
-    </style>
-    <h1 class="h1" > 1145141919810</h1>
-    <head href="./1994的微笑.mp4" class="a"></head>
-    </head>
+    }
+</style>
+<h1 class="h1"> 1145141919810</h1>
+
+</head>
+
 </html>
